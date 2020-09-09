@@ -1,0 +1,5 @@
+library(readr)
+house_prices_ps1 <- read_csv("house.csv")
+attach(house_prices_ps1)
+write.csv(house_prices_ps1,"C:/BIGDATA/Taller1/Talle1_1/.github/house.csv")
+summary(house_prices_ps1)
