@@ -45,7 +45,7 @@ house1 <- left_join(x=house1,y=train2[,c("X1","rooms")],by=c("X1"))
 house1$rooms <- ifelse(!is.na(house1$rooms.x),house1$rooms.x,house1$rooms.y)
 
 table(house1$rooms, useNA = "ifany")
-
+sssssss
 
 
 
