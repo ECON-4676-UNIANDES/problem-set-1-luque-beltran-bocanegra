@@ -15,13 +15,26 @@ attach(house1)
 #                              minimo=~min(.,na.rm = TRUE),mediana=~median(.,na.rm = TRUE))%>%gt()
 
 options(scipen = 999)
-descriptivas<-house1 %>% select(rooms,bedrooms,bathrooms,surface_total,surface_covered,price)%>% 
-summarise_each(funs(mean(.,na.rm = TRUE),sd(.,na.rm = TRUE),max(.,na.rm = TRUE),
-                    min(.,na.rm = TRUE),median(.,na.rm = TRUE),sum(is.na(.),na.rm = TRUE))) %>%
+descriptivas<- house1 %>% summarise(rooms,bedrooms,bathrooms,surface_total,surface_covered,price)%>% 
+  summarise_each(funs(mean(.,na.rm = TRUE),sd(.,na.rm = TRUE),max(.,na.rm = TRUE),
+                      min(.,na.rm = TRUE),median(.,na.rm = TRUE),sum(is.na(.),na.rm = TRUE))) %>%
   t %>% as.data.frame %>% add_rownames %>%
   separate(rowname, into = c("feature", "fun"), sep = "_")%>%gt()
 
 descriptivas
+
+house1$price_cat <- ifelse(house1$price<=253000000,"C1",
+                           ifelse(house1$price>253000000 & house1$price<=420000000,"C2",
+                                  ifelse(house1$price>420000000 & house1$price<=794000000,"C3",
+                                         ifelse(house1$price > 794000000,"C4",NA))))
+
+distinct (house1, operation_type)
+
+#cambio de USD a COP
+house1$price<-ifelse (house1$currency=="USD", house1$price*3600,house1$price)
+
+#inputación lotes
+
 
 #inputación rooms
 train <- house1[which(!is.na(house1$rooms)),c("rooms","property_type","price","l3")]
