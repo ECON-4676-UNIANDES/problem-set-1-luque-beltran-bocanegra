@@ -31,6 +31,9 @@ descriptivas1
 #                                         ifelse(house1$price > 794000000,"C4",NA))))
 
 distinct (house1, property_type)
+distinct (house1, l3)
+
+
 
 #eliminación de valores 0 en precio total 133/239343
 
@@ -72,6 +75,26 @@ sum(is.na(h2$bedrooms))
 sum(is.na(h2$surface_covered))
 sum(is.na(h2$surface_total))
 
+#nuevas variables
+h2$homicidios<-ifelse(h2$l2=="Cundinamarca", 1032,0)
+h2$hurto<-ifelse(h2$l2=="Cundinamarca", 126687,0)
+h2$arealic<-ifelse(h2$l2=="Cundinamarca", 3256328,0)
+h2$nuevasconst<-ifelse(h2$l2=="Cundinamarca", 41975,0)
+
+h2$homicidios<-ifelse(h2$l3=="Barranquilla", 272,h2$homicidios)
+h2$hurto<-ifelse(h2$l3=="Barranquilla", 10786,h2$hurto)
+h2$arealic<-ifelse(h2$l3=="Barranquilla", 403488,h2$arealic)
+h2$nuevasconst<-ifelse(h2$l3=="Barranquilla", 5669,h2$nuevasconst)
+
+h2$homicidios<-ifelse(h2$l3=="Cali", 1113,h2$homicidios)
+h2$hurto<-ifelse(h2$l3=="Cali", 20291,h2$hurto)
+h2$arealic<-ifelse(h2$l3=="Cali", 947697,h2$arealic)
+h2$nuevasconst<-ifelse(h2$l3=="Cali", 9284,h2$nuevasconst)
+
+h2$homicidios<-ifelse(h2$l2=="Antioquia", 579,h2$homicidios)
+h2$hurto<-ifelse(h2$l2=="Antioquia", 26848,h2$hurto)
+h2$arealic<-ifelse(h2$l2=="Antioquia", 840858,h2$arealic)
+h2$nuevasconst<-ifelse(h2$l2=="Antioquia", 7154,h2$nuevasconst)
 
 #punto 2.3
 
@@ -149,10 +172,14 @@ sqrt(mean(prueba$err6))
 sqrt(mean(prueba$err7))
 
 
+#nuevas variables
+
+
+
 
 error_LOOCV <- c()
-for(i in 1:dim(house2)[1]){
-  modelo  <- lm(price~rooms+bathrooms+factor(property_type)+surface_total+surface_covered,data=house2[-i,])
+for(i in 1:dim(h2)[1]){
+  modelo  <- lm(price~rooms+bathrooms+factor(property_type)+surface_total+surface_covered,data=h2[-i,])
   error_LOOCV[i] <- mean(residuals(modelo))  
 }
 mean(error_LOOCV)
