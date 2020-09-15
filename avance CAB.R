@@ -235,7 +235,6 @@ segments(x0 = rep(2, length(Wage_EB$eb_estimate2)),
 mtext(text = c("MLE", "EB2", "Observed Mean"), 
       side = 1, at = c(1, 2, 3), line = 1)
 
-
 git add -A
 git commit -m "Escribir comentario"
 git push
