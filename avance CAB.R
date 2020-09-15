@@ -97,6 +97,10 @@ which(is.na(Base_trabajo$`BASE SALARY`))
 complete.cases(Base_trabajo$`BASE SALARY`)
 sum(complete.cases(Base_trabajo$`BASE SALARY`))
 
+summary(Base_trabajo)
+summary(datosny)
+
+###CON LA BASE 1###
 
 Base_trabajo_collapsed<-Base_trabajo %>% group_by(EMPLOYER) %>% summarise(
   mean_wage = mean(`BASE SALARY`), sd_wage = sd(`BASE SALARY`),aplicaciones = sum(aplicaciones))
@@ -107,6 +111,129 @@ Base_trabajo_collapsed$sd_wage[is.na(Base_trabajo_collapsed$sd_wage)] <- 0
 write_xlsx(Base_trabajo_collapsed,"C:/Users/VSD0301/OneDrive - Universidad de los Andes/Big Data ML Applied Economics/Taller1/punto2/Base_trabajo_collapsed.xlsx")
 
 
+
+
+complete.cases(Base_trabajo_collapsed$mean_wage)
+sum(complete.cases(Base_trabajo_collapsed$mean_wage))
+
+complete.cases(Base_trabajo_collapsed$sd_wage)
+sum(complete.cases(Base_trabajo_collapsed$sd_wage))
+
+Base_trabajo_collapsed$sd_wage <- as.numeric(Base_trabajo_collapsed$sd_wage)
+sapply(Base_trabajo_collapsed, mean, na.rm=TRUE)
+summary(Base_trabajo_collapsed)
+xhat<-summary(mydata)
+
+
+Base_trabajo_collapsed$sigma_squared1<-Base_trabajo_collapsed$sd_wage*Base_trabajo_collapsed$sd_wage/Base_trabajo_collapsed$aplicaciones
+
+#se asume una segunga varianza de X q es igual al promedio de sd_wage elevado al cuadrado y dividido entre el promedio de aplicaciones de todas las empresas
+Base_trabajo_collapsed$sigma_squared2<-9608*9608/4.5
+
+Base_trabajo_collapsed$Xbar<-105119
+
+Base_trabajo_collapsed$ximinusXbar<-Base_trabajo_collapsed$mean_wage-Base_trabajo_collapsed$Xbar
+
+Base_trabajo_collapsed$ximinusXbar_sqrd<-Base_trabajo_collapsed$ximinusXbar*Base_trabajo_collapsed$ximinusXbar
+
+Base_trabajo_collapsed$N<-4858-3
+
+Base_trabajo_collapsed$a<-sum(Base_trabajo_collapsed$ximinusXbar_sqrd)
+
+
+summary(Base_trabajo_collapsed)
+
+Wage_EB<- Base_trabajo_collapsed %>%
+  mutate(eb_estimate1 = ((N*sigma_squared1*Xbar/a)+(mean_wage)-(mean_wage*N*sigma_squared1/a)), eb_estimate2 = ((N*sigma_squared2*Xbar/a)+(mean_wage)-(mean_wage*N*sigma_squared2/a)), c1=(N*sigma_squared1/a), c2=(N*sigma_squared2/a))
+
+summary(Wage_EB)
+
+head(Wage_EB %>% arrange(eb_estimate1))
+
+
+
+write_xlsx(Wage_EB,"C:/Users/VSD0301/OneDrive - Universidad de los Andes/Big Data ML Applied Economics/Taller1/punto2/Wage_EB.xlsx")
+
+
+
+#########Gráfica con eb_estimate1##################
+
+
+# Create plotting space and before scores
+plot(x = rep(1, length(Wage_EB$mean_wage)), 
+     y = Wage_EB$mean_wage, 
+     xlim = c(.5, 3.5), 
+     ylim = c(500, 630000),
+     ylab = "Wage", 
+     xlab = "Estimation",
+     main = "Predicting Wage", 
+     xaxt = "n")
+
+# Add after scores
+points(x = rep(2, length(Wage_EB$eb_estimate1)), y = Wage_EB$eb_estimate1)
+
+points(x = rep(3, length(Wage_EB$Xbar)), y = Wage_EB$Xbar)
+
+
+# Add connections with segments()
+segments(x0 = rep(1, length(Wage_EB$mean_wage)), 
+         y0 = Wage_EB$mean_wage, 
+         x1 = rep(2, length(Wage_EB$eb_estimate1)), 
+         y1 = Wage_EB$eb_estimate1,
+         col = gray(0, .5))
+
+segments(x0 = rep(2, length(Wage_EB$eb_estimate1)), 
+         y0 = Wage_EB$eb_estimate1,
+         x1 = rep(3, length(Wage_EB$Xbar)), 
+         y1 = Wage_EB$Xbar,
+         col = gray(0, .5))
+
+
+# Add labels
+mtext(text = c("MLE", "EB1", "Observed Mean"), 
+      side = 1, at = c(1, 2, 3), line = 1)
+
+
+
+
+#########Gráfica con eb_estimate2##################
+
+
+# Create plotting space and before scores
+plot(x = rep(1, length(Wage_EB$mean_wage)), 
+     y = Wage_EB$mean_wage, 
+     xlim = c(.5, 3.5), 
+     ylim = c(500, 630000),
+     ylab = "Wage", 
+     xlab = "Estimation",
+     main = "Predicting Wage (EB2)", 
+     xaxt = "n")
+
+# Add after scores
+points(x = rep(2, length(Wage_EB$eb_estimate2)), y = Wage_EB$eb_estimate2)
+
+points(x = rep(3, length(Wage_EB$Xbar)), y = Wage_EB$Xbar)
+
+
+# Add connections with segments()
+segments(x0 = rep(1, length(Wage_EB$mean_wage)), 
+         y0 = Wage_EB$mean_wage, 
+         x1 = rep(2, length(Wage_EB$eb_estimate2)), 
+         y1 = Wage_EB$eb_estimate2,
+         x2 = rep(3, length(Wage_EB$Xbar)), 
+         y2 = Wage_EB$Xbar,
+         col = gray(0, .5))
+
+segments(x0 = rep(2, length(Wage_EB$eb_estimate2)), 
+         y0 = Wage_EB$eb_estimate2,
+         x1 = rep(3, length(Wage_EB$Xbar)), 
+         y1 = Wage_EB$Xbar,
+         col = gray(0, 0.5))
+
+
+# Add labels
+mtext(text = c("MLE", "EB2", "Observed Mean"), 
+      side = 1, at = c(1, 2, 3), line = 1)
 
 
 git add -A
