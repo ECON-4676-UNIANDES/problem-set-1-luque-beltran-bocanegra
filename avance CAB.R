@@ -19,45 +19,7 @@ lapply(pkg, require, character.only=T)
 rm(pkg)
 
 
-#delay
-Sys.sleep(40)
-web_page<-read_html("https://h1bdata.info/index.php?em=&job=&city=NEW+YORK&year=2016")
-
-#With xpath
-table1_2016NYC<- web_page %>% 
-  html_node(xpath="//*[@id="myTable"]") %>% 
-  html_table()
-
-
-#css selector
-table1<- web_page %>% 
-  html_node('table.wikitable:nth-child(15) > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(1) > table:nth-child(1)') %>% 
-  html_table()
-
-
-
-##papelera de reciclaje##
-subset1<-Base_trabajo[Base_trabajo$LOCATION == 'NEW YORK, NY',]
-subset2<-Base_trabajo[Base_trabajo$LOCATION == 'NEW YORK, NY'& Base_trabajo$year == 2020,]
-glimpse(subset)
-names(subset)
-
-
-subset_collapsed<-subset %>% filter(year == max(year))
-
-Base_trabajo %>%
-  group_by(LOCATION) %>%
-  summarize(mean(BASE SALARY))
-
-grades %>%
-  group_by(school, classof) %>%
-  summarize(mean_sat = mean(sat_score))
-##################################################################
-
-
-
-
-
+###hacer el proceso de webscraping para cargar la tabla de NYc año 2020###
 url.ibex <-"https://h1bdata.info/index.php?em=&job=&city=NEW+YORK&year=2020"
 tmp <- read_html(url.ibex)
 tmp <- html_nodes(tmp, "table")
@@ -100,7 +62,9 @@ sum(complete.cases(Base_trabajo$`BASE SALARY`))
 summary(Base_trabajo)
 summary(datosny)
 
-###CON LA BASE 1###
+
+
+###CON LA BASE lista la colapsamos por compañia para hacer el analísis de EB###
 
 Base_trabajo_collapsed<-Base_trabajo %>% group_by(EMPLOYER) %>% summarise(
   mean_wage = mean(`BASE SALARY`), sd_wage = sd(`BASE SALARY`),aplicaciones = sum(aplicaciones))
@@ -124,6 +88,8 @@ sapply(Base_trabajo_collapsed, mean, na.rm=TRUE)
 summary(Base_trabajo_collapsed)
 xhat<-summary(mydata)
 
+
+###se crean las variables que serviran para calcular la posterior mean###
 
 Base_trabajo_collapsed$sigma_squared1<-Base_trabajo_collapsed$sd_wage*Base_trabajo_collapsed$sd_wage/Base_trabajo_collapsed$aplicaciones
 
@@ -154,7 +120,8 @@ head(Wage_EB %>% arrange(eb_estimate1))
 
 write_xlsx(Wage_EB,"C:/Users/VSD0301/OneDrive - Universidad de los Andes/Big Data ML Applied Economics/Taller1/punto2/Wage_EB.xlsx")
 
-
+#####Se grafican los resultados para el análisis. El primer resultado eb_estimate1
+#### se calculó con base en la varianza sigma_squared1
 
 #########Gráfica con eb_estimate1##################
 
@@ -195,6 +162,9 @@ mtext(text = c("MLE", "EB1", "Observed Mean"),
 
 
 
+
+###El primer resultado eb_estimate2
+#### se calculó con base en la varianza sigma_squared2
 
 #########Gráfica con eb_estimate2##################
 
@@ -239,3 +209,35 @@ git add -A
 git commit -m "Escribir comentario"
 git push
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##papelera de reciclaje##
+subset1<-Base_trabajo[Base_trabajo$LOCATION == 'NEW YORK, NY',]
+subset2<-Base_trabajo[Base_trabajo$LOCATION == 'NEW YORK, NY'& Base_trabajo$year == 2020,]
+glimpse(subset)
+names(subset)
+
+
+subset_collapsed<-subset %>% filter(year == max(year))
+
+Base_trabajo %>%
+  group_by(LOCATION) %>%
+  summarize(mean(BASE SALARY))
+
+grades %>%
+  group_by(school, classof) %>%
+  summarize(mean_sat = mean(sat_score))
+##################################################################
